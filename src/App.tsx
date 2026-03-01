@@ -33,16 +33,23 @@ const App = () => (
             <Route path="/compress" element={<CompressPDF />} />
             <Route path="/pdf-to-word" element={<PDFToWord />} />
             <Route path="/word-to-pdf" element={<WordToPDF />} />
-            <Route path="/pdf-to-ppt" element={<ComingSoon />} />
-            <Route path="/pdf-to-excel" element={<ComingSoon />} />
-            <Route path="/pdf-to-jpg" element={<ComingSoon />} />
-            <Route path="/jpg-to-pdf" element={<ComingSoon />} />
-            <Route path="/rotate" element={<ComingSoon />} />
-            <Route path="/protect" element={<ComingSoon />} />
-            <Route path="/edit" element={<ComingSoon />} />
             <Route path="/about" element={<About />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            {/* All other tool routes → Coming Soon */}
+            {[
+              '/pdf-to-ppt', '/pdf-to-excel', '/pdf-to-jpg', '/jpg-to-pdf',
+              '/pdf-to-text', '/html-to-pdf', '/rotate', '/delete-pages',
+              '/reorder-pages', '/extract-pages', '/optimize-web', '/reduce-size',
+              '/pdf-to-pdfa', '/add-text', '/add-image', '/add-shapes',
+              '/highlight', '/redact', '/add-notes', '/unlock', '/protect',
+              '/permissions', '/sign', '/encrypt', '/remove-metadata',
+              '/watermark', '/page-numbers', '/header-footer', '/compare',
+              '/ocr', '/statistics', '/workflow-ebook', '/workflow-secure',
+              '/workflow-extract',
+            ].map((p) => (
+              <Route key={p} path={p} element={<ComingSoon />} />
+            ))}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </TooltipProvider>

@@ -14,7 +14,63 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          updated_at: string
+          user_id: string
+          username: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+          username: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+          username?: string
+        }
+        Relationships: []
+      }
+      saved_files: {
+        Row: {
+          conversion_type: string
+          created_at: string
+          file_data: string | null
+          file_name: string
+          file_size: number
+          id: string
+          user_id: string
+        }
+        Insert: {
+          conversion_type: string
+          created_at?: string
+          file_data?: string | null
+          file_name: string
+          file_size?: number
+          id?: string
+          user_id: string
+        }
+        Update: {
+          conversion_type?: string
+          created_at?: string
+          file_data?: string | null
+          file_name?: string
+          file_size?: number
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

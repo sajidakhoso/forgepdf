@@ -17,15 +17,21 @@ const FileUpload = ({ accept, multiple = false, files, onFilesChange, label }: F
 
   const validateFiles = (newFiles: FileList | File[]) => {
     const valid: File[] = [];
+    const acceptedExts = accept.split(',').map(a => a.trim().toLowerCase());
     for (const file of Array.from(newFiles)) {
       if (file.size > MAX_FILE_SIZE) {
         setError(`${file.name} exceeds 50MB limit`);
         return null;
       }
-      const ext = '.' + file.name.split('.').pop()?.toLowerCase();
-      const acceptedExts = accept.split(',').map(a => a.trim());
-      if (!acceptedExts.some(a => ext === a || file.type.includes(a.replace('.', '')))) {
-        setError(`${file.name} is not a supported file type`);
+      const ext = '.' + (file.name.split('.').pop()?.toLowerCase() || '');
+      const mimeType = file.type.toLowerCase();
+      const isAccepted = acceptedExts.some(a => {
+        if (a.startsWith('.')) return ext === a;
+        if (a.includes('/')) return mimeType === a;
+        return mimeType.includes(a);
+      });
+      if (!isAccepted) {
+        setError(`${file.name} is not a supported file type. Please upload ${acceptedExts.join(', ')} files.`);
         return null;
       }
       valid.push(file);
@@ -63,8 +69,8 @@ const FileUpload = ({ accept, multiple = false, files, onFilesChange, label }: F
         onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
         onDragLeave={() => setDragOver(false)}
         onDrop={handleDrop}
-        className={`relative border-2 border-dashed rounded-lg p-8 md:p-12 text-center transition-all cursor-pointer
-          ${dragOver ? 'border-accent bg-accent/5 scale-[1.01]' : 'border-border hover:border-muted-foreground/40'}
+        className={`relative border-2 border-dashed rounded-xl p-8 md:p-12 text-center transition-all cursor-pointer
+          ${dragOver ? 'border-primary bg-primary/5 scale-[1.01]' : 'border-border hover:border-muted-foreground/40'}
         `}
         onClick={() => document.getElementById('file-input')?.click()}
       >

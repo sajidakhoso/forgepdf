@@ -16,7 +16,7 @@ const ToolCard = ({ title, description, icon: Icon, colorClass, bgClass, onClick
       whileHover={{ y: -4, scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
       onClick={onClick}
-      className={`group relative w-full rounded-xl border border-border bg-card p-6 text-left transition-shadow hover:shadow-lg`}
+      className="group relative w-full rounded-xl glass p-6 text-left transition-shadow hover:shadow-xl"
     >
       <div className={`mb-4 inline-flex rounded-lg p-3 ${bgClass}`}>
         <Icon className={`h-6 w-6 ${colorClass}`} />

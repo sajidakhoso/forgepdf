@@ -6,46 +6,51 @@
 
 @layer base {
   :root {
-    --background: 220 20% 97%;
-    --foreground: 222 47% 11%;
+    --background: 240 20% 97%;
+    --foreground: 230 25% 12%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    --card-foreground: 230 25% 12%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+    --popover-foreground: 230 25% 12%;
 
-    --primary: 222 60% 22%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 250 70% 56%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 14% 92%;
-    --secondary-foreground: 222 47% 11%;
+    --secondary: 240 14% 92%;
+    --secondary-foreground: 230 25% 12%;
 
-    --muted: 220 14% 94%;
-    --muted-foreground: 220 9% 46%;
+    --muted: 240 14% 94%;
+    --muted-foreground: 230 9% 46%;
 
-    --accent: 4 85% 57%;
+    --accent: 330 80% 60%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 220 13% 90%;
-    --input: 220 13% 90%;
-    --ring: 222 60% 22%;
+    --border: 240 13% 90%;
+    --input: 240 13% 90%;
+    --ring: 250 70% 56%;
 
     --radius: 0.75rem;
 
-    --tool-merge: 222 60% 22%;
-    --tool-merge-light: 222 60% 95%;
-    --tool-split: 262 60% 45%;
-    --tool-split-light: 262 60% 95%;
-    --tool-compress: 150 60% 38%;
-    --tool-compress-light: 150 60% 95%;
+    --gradient-primary: linear-gradient(135deg, hsl(250, 70%, 56%) 0%, hsl(210, 90%, 55%) 100%);
+    --gradient-secondary: linear-gradient(135deg, hsl(330, 80%, 60%) 0%, hsl(25, 95%, 58%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(200, 95%, 60%) 0%, hsl(170, 95%, 55%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(250, 30%, 96%) 0%, hsl(210, 40%, 95%) 50%, hsl(330, 30%, 96%) 100%);
+
+    --tool-merge: 250 70% 56%;
+    --tool-merge-light: 250 70% 95%;
+    --tool-split: 280 65% 55%;
+    --tool-split-light: 280 65% 95%;
+    --tool-compress: 160 65% 42%;
+    --tool-compress-light: 160 65% 95%;
     --tool-pdf-word: 30 90% 50%;
     --tool-pdf-word-light: 30 90% 95%;
-    --tool-word-pdf: 4 85% 57%;
-    --tool-word-pdf-light: 4 85% 95%;
+    --tool-word-pdf: 330 80% 60%;
+    --tool-word-pdf-light: 330 80% 95%;
     --tool-ppt: 15 80% 52%;
     --tool-ppt-light: 15 80% 95%;
     --tool-excel: 142 60% 40%;
@@ -56,8 +61,8 @@
     --tool-rotate-light: 200 70% 95%;
     --tool-protect: 340 65% 50%;
     --tool-protect-light: 340 65% 95%;
-    --tool-edit: 280 55% 50%;
-    --tool-edit-light: 280 55% 95%;
+    --tool-edit: 290 60% 55%;
+    --tool-edit-light: 290 60% 95%;
     --tool-sign: 170 60% 40%;
     --tool-sign-light: 170 60% 95%;
 
@@ -72,25 +77,26 @@
   }
 
   .dark {
-    --background: 222 47% 6%;
-    --foreground: 210 40% 98%;
-    --card: 222 47% 9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222 47% 9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 210 40% 98%;
-    --primary-foreground: 222 47% 11%;
-    --secondary: 217 33% 17%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217 33% 17%;
-    --muted-foreground: 215 20% 65%;
-    --accent: 4 85% 57%;
+    --background: 230 25% 7%;
+    --foreground: 210 40% 96%;
+    --card: 230 25% 10%;
+    --card-foreground: 210 40% 96%;
+    --popover: 230 25% 10%;
+    --popover-foreground: 210 40% 96%;
+    --primary: 250 70% 62%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 230 20% 16%;
+    --secondary-foreground: 210 40% 96%;
+    --muted: 230 20% 16%;
+    --muted-foreground: 220 15% 60%;
+    --accent: 330 80% 65%;
     --accent-foreground: 0 0% 100%;
     --destructive: 0 63% 31%;
     --destructive-foreground: 210 40% 98%;
-    --border: 217 33% 17%;
-    --input: 217 33% 17%;
-    --ring: 213 27% 84%;
+    --border: 230 20% 18%;
+    --input: 230 20% 18%;
+    --ring: 250 70% 62%;
+    --gradient-hero: linear-gradient(135deg, hsl(250, 25%, 10%) 0%, hsl(210, 30%, 9%) 50%, hsl(330, 20%, 10%) 100%);
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -114,5 +120,31 @@
 @layer utilities {
   .font-display {
     font-family: 'Space Grotesk', sans-serif;
+  }
+  .gradient-primary {
+    background: var(--gradient-primary);
+  }
+  .gradient-secondary {
+    background: var(--gradient-secondary);
+  }
+  .gradient-accent {
+    background: var(--gradient-accent);
+  }
+  .gradient-text {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .gradient-text-secondary {
+    background: var(--gradient-secondary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .glass {
+    background: hsl(var(--card) / 0.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid hsl(var(--border) / 0.5);
   }
 }

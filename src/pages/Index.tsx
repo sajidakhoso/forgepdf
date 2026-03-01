@@ -1,30 +1,13 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import {
-  Layers, Scissors, Minimize2, FileOutput, FileInput,
-  Presentation, Table2, Image, RotateCw, ShieldCheck,
-  Pen, ArrowRight
-} from 'lucide-react';
+import { ArrowRight, Star, Users, FileText, Zap } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ToolCard from '@/components/ToolCard';
-import { Star, Users, FileText, Zap } from 'lucide-react';
+import CategoryBar, { type ToolCategory } from '@/components/CategoryBar';
+import { tools } from '@/data/tools';
 import { Button } from '@/components/ui/button';
-
-const tools = [
-  { title: 'Merge PDF', description: 'Combine multiple PDFs into one document', icon: Layers, colorClass: 'text-tool-merge', bgClass: 'bg-tool-merge-light', path: '/merge' },
-  { title: 'Split PDF', description: 'Extract pages from your PDF file', icon: Scissors, colorClass: 'text-tool-split', bgClass: 'bg-tool-split-light', path: '/split' },
-  { title: 'Compress PDF', description: 'Reduce your PDF file size', icon: Minimize2, colorClass: 'text-tool-compress', bgClass: 'bg-tool-compress-light', path: '/compress' },
-  { title: 'PDF to Word', description: 'Convert PDF to editable Word files', icon: FileOutput, colorClass: 'text-tool-pdf-word', bgClass: 'bg-tool-pdf-word-light', path: '/pdf-to-word' },
-  { title: 'Word to PDF', description: 'Convert Word documents to PDF', icon: FileInput, colorClass: 'text-tool-word-pdf', bgClass: 'bg-tool-word-pdf-light', path: '/word-to-pdf' },
-  { title: 'PDF to PowerPoint', description: 'Turn PDFs into editable presentations', icon: Presentation, colorClass: 'text-tool-ppt', bgClass: 'bg-tool-ppt-light', path: '/pdf-to-ppt' },
-  { title: 'PDF to Excel', description: 'Extract PDF tables into spreadsheets', icon: Table2, colorClass: 'text-tool-excel', bgClass: 'bg-tool-excel-light', path: '/pdf-to-excel' },
-  { title: 'PDF to JPG', description: 'Convert each page to a JPG image', icon: Image, colorClass: 'text-tool-jpg', bgClass: 'bg-tool-jpg-light', path: '/pdf-to-jpg' },
-  { title: 'JPG to PDF', description: 'Convert images to PDF in seconds', icon: FileInput, colorClass: 'text-tool-jpg', bgClass: 'bg-tool-jpg-light', path: '/jpg-to-pdf' },
-  { title: 'Rotate PDF', description: 'Rotate pages to the correct orientation', icon: RotateCw, colorClass: 'text-tool-rotate', bgClass: 'bg-tool-rotate-light', path: '/rotate' },
-  { title: 'Protect PDF', description: 'Encrypt and password-protect your PDF', icon: ShieldCheck, colorClass: 'text-tool-protect', bgClass: 'bg-tool-protect-light', path: '/protect' },
-  { title: 'Edit PDF', description: 'Add text, images, and annotations', icon: Pen, colorClass: 'text-tool-edit', bgClass: 'bg-tool-edit-light', path: '/edit' },
-];
 
 const stats = [
   { icon: FileText, value: '2.5M+', label: 'PDFs Processed' },
@@ -39,11 +22,14 @@ const testimonials = [
   { name: 'Emily Chen', role: 'Legal Associate', avatar: 'EC', quote: 'The split tool is a game-changer for legal docs. I can extract exactly the pages I need in seconds.', rating: 5 },
 ];
 
-const container = { hidden: {}, show: { transition: { staggerChildren: 0.05 } } };
+const container = { hidden: {}, show: { transition: { staggerChildren: 0.04 } } };
 const item = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } };
 
 const Index = () => {
   const navigate = useNavigate();
+  const [category, setCategory] = useState<ToolCategory>('all');
+
+  const filtered = category === 'all' ? tools : tools.filter((t) => t.category === category);
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -73,7 +59,7 @@ const Index = () => {
               transition={{ delay: 0.1 }}
               className="mt-5 text-lg text-muted-foreground max-w-xl mx-auto"
             >
-              Merge, split, compress, convert & protect — powerful PDF tools running entirely in your browser. No uploads. No waiting.
+              Merge, split, compress, convert & protect — 40+ powerful PDF tools running entirely in your browser.
             </motion.p>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -89,13 +75,12 @@ const Index = () => {
               </Button>
             </motion.div>
           </div>
-          {/* Decorative blobs */}
           <div className="absolute top-0 left-1/4 w-72 h-72 bg-primary/10 rounded-full blur-3xl" />
           <div className="absolute bottom-0 right-1/4 w-72 h-72 bg-accent/10 rounded-full blur-3xl" />
         </section>
 
-        {/* Tools Grid */}
-        <section className="container py-16 max-w-5xl">
+        {/* Category Bar + Tools Grid */}
+        <section className="container py-16 max-w-6xl">
           <motion.h2
             initial={{ opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -104,16 +89,29 @@ const Index = () => {
           >
             Every PDF tool you need
           </motion.h2>
-          <p className="text-muted-foreground text-center mb-10">12 powerful tools, zero installs required</p>
+          <p className="text-muted-foreground text-center mb-6">40+ powerful tools, zero installs required</p>
+
+          <div className="flex justify-center mb-8">
+            <CategoryBar active={category} onChange={setCategory} />
+          </div>
+
           <motion.div
+            key={category}
             variants={container}
             initial="hidden"
             animate="show"
             className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
           >
-            {tools.map((tool) => (
+            {filtered.map((tool) => (
               <motion.div key={tool.path} variants={item}>
-                <ToolCard {...tool} onClick={() => navigate(tool.path)} />
+                <ToolCard
+                  title={tool.title}
+                  description={tool.description}
+                  icon={tool.icon}
+                  colorClass={`text-tool-${tool.colorVar}`}
+                  bgClass={`bg-tool-${tool.colorVar}-light`}
+                  onClick={() => navigate(tool.path)}
+                />
               </motion.div>
             ))}
           </motion.div>
@@ -141,24 +139,14 @@ const Index = () => {
 
         {/* Testimonials */}
         <section className="container py-16 max-w-4xl">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
             <h2 className="font-display text-3xl font-bold text-center mb-2">
               Loved by <span className="gradient-text">thousands</span>
             </h2>
-            <p className="text-muted-foreground text-center mb-10">
-              See what our users have to say about Forge PDF
-            </p>
+            <p className="text-muted-foreground text-center mb-10">See what our users have to say about Forge PDF</p>
             <div className="grid gap-6 md:grid-cols-3">
               {testimonials.map((t) => (
-                <motion.div
-                  key={t.name}
-                  whileHover={{ y: -4 }}
-                  className="glass rounded-xl p-6 flex flex-col"
-                >
+                <motion.div key={t.name} whileHover={{ y: -4 }} className="glass rounded-xl p-6 flex flex-col">
                   <div className="flex gap-1 mb-4">
                     {Array.from({ length: t.rating }).map((_, i) => (
                       <Star key={i} className="h-4 w-4 fill-accent text-accent" />

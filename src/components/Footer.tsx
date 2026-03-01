@@ -13,7 +13,7 @@ const Footer = () => (
         <div className="flex items-center gap-1 text-sm text-muted-foreground">
           Developed with <Heart className="h-3.5 w-3.5 fill-accent text-accent mx-0.5" /> by{' '}
           <span className="font-semibold gradient-text">Anglowie</span>
-          <span className="ml-2 text-xs">v1.0</span>
+          <span className="ml-2 text-xs">v2.0</span>
         </div>
         <p className="text-xs text-muted-foreground">
           © {new Date().getFullYear()} Forge PDF. All rights reserved.

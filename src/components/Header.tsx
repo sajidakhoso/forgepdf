@@ -1,4 +1,4 @@
-import { FileText, LogIn, LogOut, LayoutDashboard, Bell, User, ChevronDown, Sun, Moon } from 'lucide-react';
+import { FileText, LogIn, LogOut, LayoutDashboard, Bell, User, ChevronDown, Sun, Moon, Menu, X } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
@@ -11,6 +11,7 @@ const Header = () => {
   const navigate = useNavigate();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleLogout = async () => {
     await signOut();
@@ -19,26 +20,23 @@ const Header = () => {
 
   return (
     <header className="sticky top-0 z-50 glass">
-      <div className="container flex h-16 items-center justify-between">
-        <Link to="/" className="flex items-center gap-2.5">
+      <div className="container flex h-14 md:h-16 items-center justify-between px-4">
+        <Link to="/" className="flex items-center gap-2">
           <div className="rounded-lg gradient-primary p-1.5">
-            <FileText className="h-5 w-5 text-primary-foreground" />
+            <FileText className="h-4 w-4 md:h-5 md:w-5 text-primary-foreground" />
           </div>
-          <span className="font-display text-xl font-bold gradient-text">Forge PDF</span>
+          <span className="font-display text-lg md:text-xl font-bold gradient-text">Forge PDF</span>
         </Link>
-        <nav className="flex items-center gap-3">
-          <Link to="/" className="hidden md:inline text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-            Tools
-          </Link>
-          <Link to="/about" className="hidden md:inline text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
-            About
-          </Link>
+
+        {/* Desktop Nav */}
+        <nav className="hidden md:flex items-center gap-3">
+          <Link to="/" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Tools</Link>
+          <Link to="/about" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">About</Link>
           <Button variant="ghost" size="icon" onClick={toggleTheme} className="shrink-0">
             {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </Button>
           {user ? (
             <div className="flex items-center gap-2">
-              {/* Notification Bell */}
               <div className="relative">
                 <Button variant="ghost" size="icon" onClick={() => setNotifOpen(!notifOpen)} className="relative">
                   <Bell className="h-4 w-4" />
@@ -59,8 +57,6 @@ const Header = () => {
                   </div>
                 )}
               </div>
-
-              {/* Profile Dropdown */}
               <div className="relative">
                 <Button variant="ghost" size="sm" onClick={() => setDropdownOpen(!dropdownOpen)} className="gap-1.5">
                   <div className="h-6 w-6 rounded-full gradient-primary flex items-center justify-center">
@@ -87,7 +83,63 @@ const Header = () => {
             </Button>
           )}
         </nav>
+
+        {/* Mobile Nav Controls */}
+        <div className="flex md:hidden items-center gap-1">
+          <Button variant="ghost" size="icon" onClick={toggleTheme} className="h-9 w-9">
+            {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          </Button>
+          {user && (
+            <Button variant="ghost" size="icon" onClick={() => setNotifOpen(!notifOpen)} className="relative h-9 w-9">
+              <Bell className="h-4 w-4" />
+              <span className="absolute top-1 right-1 h-2.5 w-2.5 rounded-full gradient-secondary border-2 border-background" />
+            </Button>
+          )}
+          <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="h-9 w-9">
+            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </Button>
+        </div>
       </div>
+
+      {/* Mobile Menu */}
+      {mobileMenuOpen && (
+        <div className="md:hidden border-t border-border glass px-4 py-4 space-y-2">
+          <Link to="/" onClick={() => setMobileMenuOpen(false)} className="block px-3 py-2.5 rounded-lg text-sm font-medium text-foreground hover:bg-muted/50 transition-colors">
+            Tools
+          </Link>
+          <Link to="/about" onClick={() => setMobileMenuOpen(false)} className="block px-3 py-2.5 rounded-lg text-sm font-medium text-foreground hover:bg-muted/50 transition-colors">
+            About
+          </Link>
+          {user ? (
+            <>
+              <button onClick={() => { navigate('/dashboard'); setMobileMenuOpen(false); }} className="w-full flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium text-foreground hover:bg-muted/50 transition-colors">
+                <LayoutDashboard className="h-4 w-4" /> My Files
+              </button>
+              <button onClick={() => { handleLogout(); setMobileMenuOpen(false); }} className="w-full flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium text-destructive hover:bg-muted/50 transition-colors">
+                <LogOut className="h-4 w-4" /> Logout
+              </button>
+            </>
+          ) : (
+            <Button size="sm" className="w-full gradient-primary text-primary-foreground border-0 mt-1" onClick={() => { navigate('/auth'); setMobileMenuOpen(false); }}>
+              <LogIn className="h-4 w-4 mr-1" /> Login
+            </Button>
+          )}
+        </div>
+      )}
+
+      {/* Mobile Notification Dropdown */}
+      {notifOpen && (
+        <div className="md:hidden border-t border-border glass px-4 py-3">
+          <div className="flex items-center justify-between mb-2">
+            <h4 className="font-display font-semibold text-sm">Notifications</h4>
+            <button className="text-xs text-muted-foreground" onClick={() => setNotifOpen(false)}>Clear all</button>
+          </div>
+          <div className="rounded-lg bg-muted/50 p-3 text-xs">
+            <p className="font-medium">Welcome to Forge PDF! 🎉</p>
+            <p className="text-muted-foreground mt-0.5">Your account is ready to use</p>
+          </div>
+        </div>
+      )}
     </header>
   );
 };

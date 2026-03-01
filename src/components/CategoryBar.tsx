@@ -20,15 +20,15 @@ const CategoryBar = ({ active, onChange }: CategoryBarProps) => (
   <>
     <style>{`.cat-bar { scrollbar-width: none; -ms-overflow-style: none; } .cat-bar::-webkit-scrollbar { display: none; }`}</style>
     <div
-      className="cat-bar overflow-x-auto whitespace-nowrap py-2 px-3 rounded-xl shadow-sm border border-border"
+      className="cat-bar overflow-x-auto whitespace-nowrap py-1.5 md:py-2 px-2 md:px-3 rounded-xl shadow-sm border border-border w-full"
       style={{ background: 'linear-gradient(90deg, hsl(var(--card)) 0%, hsl(var(--muted)) 100%)' }}
     >
-      <div className="flex gap-1 min-w-max">
+      <div className="flex gap-0.5 md:gap-1 min-w-max">
         {categories.map((cat) => (
           <button
             key={cat.id}
             onClick={() => onChange(cat.id)}
-            className={`relative inline-block px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+            className={`relative inline-block px-3 md:px-4 py-1.5 md:py-2 rounded-lg text-xs md:text-sm font-medium transition-all duration-200 ${
               active === cat.id
                 ? 'text-primary-foreground shadow-md'
                 : 'text-muted-foreground hover:scale-[1.02] hover:-translate-y-px'

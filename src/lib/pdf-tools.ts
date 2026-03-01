@@ -62,19 +62,50 @@ export async function splitPDF(file: File, pageRangeStr: string): Promise<void> 
   }
 }
 
-export async function compressPDF(file: File): Promise<Blob> {
+export async function compressPDF(file: File, quality: number = 0.5): Promise<Blob> {
+  const { getDocument, GlobalWorkerOptions } = await import('pdfjs-dist');
+  GlobalWorkerOptions.workerSrc = new URL(
+    'pdfjs-dist/build/pdf.worker.mjs',
+    import.meta.url
+  ).toString();
+
   const bytes = await file.arrayBuffer();
-  const pdf = await PDFDocument.load(bytes);
-  
-  // Remove metadata to reduce size
-  pdf.setTitle('');
-  pdf.setAuthor('');
-  pdf.setSubject('');
-  pdf.setKeywords([]);
-  pdf.setProducer('Forge PDF');
-  pdf.setCreator('Forge PDF');
-  
-  const compressedBytes = await pdf.save({ useObjectStreams: true });
+  const pdfDoc = await getDocument({ data: new Uint8Array(bytes) }).promise;
+  const numPages = pdfDoc.numPages;
+
+  const newPdf = await PDFDocument.create();
+  newPdf.setProducer('Forge PDF');
+  newPdf.setCreator('Forge PDF');
+
+  const scale = quality < 0.4 ? 1.0 : quality < 0.7 ? 1.2 : 1.5;
+  const jpegQuality = quality;
+
+  for (let i = 1; i <= numPages; i++) {
+    const page = await pdfDoc.getPage(i);
+    const viewport = page.getViewport({ scale });
+
+    const canvas = document.createElement('canvas');
+    canvas.width = viewport.width;
+    canvas.height = viewport.height;
+    const ctx = canvas.getContext('2d')!;
+
+    await page.render({ canvasContext: ctx, viewport }).promise;
+
+    const jpegDataUrl = canvas.toDataURL('image/jpeg', jpegQuality);
+    const jpegBytes = Uint8Array.from(atob(jpegDataUrl.split(',')[1]), c => c.charCodeAt(0));
+    const jpegImage = await newPdf.embedJpg(jpegBytes);
+
+    const originalViewport = page.getViewport({ scale: 1 });
+    const newPage = newPdf.addPage([originalViewport.width * 0.75, originalViewport.height * 0.75]);
+    newPage.drawImage(jpegImage, {
+      x: 0,
+      y: 0,
+      width: newPage.getWidth(),
+      height: newPage.getHeight(),
+    });
+  }
+
+  const compressedBytes = await newPdf.save({ useObjectStreams: true });
   return new Blob([compressedBytes as unknown as ArrayBuffer], { type: 'application/pdf' });
 }
 

@@ -8,18 +8,22 @@ import Footer from '@/components/Footer';
 import FileUpload from '@/components/FileUpload';
 import ProcessingButton from '@/components/ProcessingButton';
 import { compressPDF, formatFileSize } from '@/lib/pdf-tools';
+import { Slider } from '@/components/ui/slider';
 
 const CompressPDF = () => {
   const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{ blob: Blob; originalSize: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [quality, setQuality] = useState(0.5);
+
+  const qualityLabel = quality < 0.4 ? 'High Compression' : quality < 0.7 ? 'Balanced' : 'Low Compression';
 
   const handleCompress = async () => {
     if (files.length === 0) { setError('Please upload a PDF file.'); return; }
     setLoading(true); setError(null); setResult(null);
     try {
-      const blob = await compressPDF(files[0]);
+      const blob = await compressPDF(files[0], quality);
       setResult({ blob, originalSize: files[0].size });
     } catch (e: any) {
       setError(e.message || 'Failed to compress PDF.');
@@ -39,6 +43,26 @@ const CompressPDF = () => {
           <h1 className="font-display text-3xl font-bold mb-2">Compress PDF</h1>
           <p className="text-muted-foreground mb-8">Reduce the file size of your PDF documents.</p>
           <FileUpload accept=".pdf" files={files} onFilesChange={setFiles} label="Drop your PDF file here" />
+
+          <div className="mt-6 rounded-lg bg-card border border-border p-4">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-medium">Compression Level</span>
+              <span className="text-xs text-muted-foreground">{qualityLabel}</span>
+            </div>
+            <Slider
+              value={[quality]}
+              onValueChange={([v]) => setQuality(v)}
+              min={0.1}
+              max={0.9}
+              step={0.1}
+              className="w-full"
+            />
+            <div className="flex justify-between text-xs text-muted-foreground mt-1">
+              <span>Smaller file</span>
+              <span>Better quality</span>
+            </div>
+          </div>
+
           {error && <p className="mt-4 text-sm text-destructive">{error}</p>}
           {result && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-4 rounded-lg bg-card border border-border p-4">
@@ -48,6 +72,10 @@ const CompressPDF = () => {
                 {' → '}
                 <span className="text-muted-foreground">Compressed:</span>{' '}
                 <span className="font-medium text-tool-compress">{formatFileSize(result.blob.size)}</span>
+                {' '}
+                <span className="text-xs text-muted-foreground">
+                  ({Math.round((1 - result.blob.size / result.originalSize) * 100)}% reduction)
+                </span>
               </p>
             </motion.div>
           )}

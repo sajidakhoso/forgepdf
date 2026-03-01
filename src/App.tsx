@@ -9,6 +9,9 @@ import MergePDF from "./pages/MergePDF";
 import SplitPDF from "./pages/SplitPDF";
 import CompressPDF from "./pages/CompressPDF";
 import { PDFToWord, WordToPDF } from "./pages/ConvertPages";
+import About from "./pages/About";
+import Auth from "./pages/Auth";
+import ComingSoon from "./pages/ComingSoon";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +28,15 @@ const App = () => (
           <Route path="/compress" element={<CompressPDF />} />
           <Route path="/pdf-to-word" element={<PDFToWord />} />
           <Route path="/word-to-pdf" element={<WordToPDF />} />
+          <Route path="/pdf-to-ppt" element={<ComingSoon />} />
+          <Route path="/pdf-to-excel" element={<ComingSoon />} />
+          <Route path="/pdf-to-jpg" element={<ComingSoon />} />
+          <Route path="/jpg-to-pdf" element={<ComingSoon />} />
+          <Route path="/rotate" element={<ComingSoon />} />
+          <Route path="/protect" element={<ComingSoon />} />
+          <Route path="/edit" element={<ComingSoon />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/auth" element={<Auth />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

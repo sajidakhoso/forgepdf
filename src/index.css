@@ -46,6 +46,20 @@
     --tool-pdf-word-light: 30 90% 95%;
     --tool-word-pdf: 4 85% 57%;
     --tool-word-pdf-light: 4 85% 95%;
+    --tool-ppt: 15 80% 52%;
+    --tool-ppt-light: 15 80% 95%;
+    --tool-excel: 142 60% 40%;
+    --tool-excel-light: 142 60% 95%;
+    --tool-jpg: 45 95% 50%;
+    --tool-jpg-light: 45 95% 95%;
+    --tool-rotate: 200 70% 50%;
+    --tool-rotate-light: 200 70% 95%;
+    --tool-protect: 340 65% 50%;
+    --tool-protect-light: 340 65% 95%;
+    --tool-edit: 280 55% 50%;
+    --tool-edit-light: 280 55% 95%;
+    --tool-sign: 170 60% 40%;
+    --tool-sign-light: 170 60% 95%;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;

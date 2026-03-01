@@ -1,11 +1,13 @@
-import { FileText, LogIn, LogOut, LayoutDashboard, Bell, User, ChevronDown } from 'lucide-react';
+import { FileText, LogIn, LogOut, LayoutDashboard, Bell, User, ChevronDown, Sun, Moon } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { useState } from 'react';
 
 const Header = () => {
   const { user, profile, signOut } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
@@ -31,6 +33,9 @@ const Header = () => {
           <Link to="/about" className="hidden md:inline text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
             About
           </Link>
+          <Button variant="ghost" size="icon" onClick={toggleTheme} className="shrink-0">
+            {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          </Button>
           {user ? (
             <div className="flex items-center gap-2">
               {/* Notification Bell */}

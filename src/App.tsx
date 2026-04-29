@@ -10,11 +10,19 @@ import NotFound from "./pages/NotFound";
 import MergePDF from "./pages/MergePDF";
 import SplitPDF from "./pages/SplitPDF";
 import CompressPDF from "./pages/CompressPDF";
-import { PDFToWord, WordToPDF } from "./pages/ConvertPages";
 import About from "./pages/About";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
-import ComingSoon from "./pages/ComingSoon";
+import {
+  RotatePage, DeletePagesPage, ReorderPagesPage, ExtractPagesPage,
+  OptimizeWebPage, ReduceSizePage, PdfToPdfAPage,
+  PdfToJpgPage, JpgToPdfPage, PdfToPptPage, PdfToExcelPage, PdfToTextPage, HtmlToPdfPage,
+  AddTextPage, AddImagePage, AddShapesPage, HighlightPage, RedactPage, AddNotesPage,
+  UnlockPage, ProtectPage, PermissionsPage, SignPage, EncryptPage, RemoveMetadataPage,
+  WatermarkPage, PageNumbersPage, HeaderFooterPage, ComparePage, OcrPage, StatisticsPage,
+  WorkflowEbookPage, WorkflowSecurePage, WorkflowExtractPage,
+  WordToPdfPage, PdfToWordPage,
+} from "./pages/AllTools";
 
 const queryClient = new QueryClient();
 
@@ -22,38 +30,73 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <BrowserRouter>
       <ThemeProvider>
-      <AuthProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/merge" element={<MergePDF />} />
-            <Route path="/split" element={<SplitPDF />} />
-            <Route path="/compress" element={<CompressPDF />} />
-            <Route path="/pdf-to-word" element={<PDFToWord />} />
-            <Route path="/word-to-pdf" element={<WordToPDF />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            {/* All other tool routes → Coming Soon */}
-            {[
-              '/pdf-to-ppt', '/pdf-to-excel', '/pdf-to-jpg', '/jpg-to-pdf',
-              '/pdf-to-text', '/html-to-pdf', '/rotate', '/delete-pages',
-              '/reorder-pages', '/extract-pages', '/optimize-web', '/reduce-size',
-              '/pdf-to-pdfa', '/add-text', '/add-image', '/add-shapes',
-              '/highlight', '/redact', '/add-notes', '/unlock', '/protect',
-              '/permissions', '/sign', '/encrypt', '/remove-metadata',
-              '/watermark', '/page-numbers', '/header-footer', '/compare',
-              '/ocr', '/statistics', '/workflow-ebook', '/workflow-secure',
-              '/workflow-extract',
-            ].map((p) => (
-              <Route key={p} path={p} element={<ComingSoon />} />
-            ))}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </TooltipProvider>
-      </AuthProvider>
+        <AuthProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+
+              {/* Organize */}
+              <Route path="/merge" element={<MergePDF />} />
+              <Route path="/split" element={<SplitPDF />} />
+              <Route path="/rotate" element={<RotatePage />} />
+              <Route path="/delete-pages" element={<DeletePagesPage />} />
+              <Route path="/reorder-pages" element={<ReorderPagesPage />} />
+              <Route path="/extract-pages" element={<ExtractPagesPage />} />
+
+              {/* Optimize */}
+              <Route path="/compress" element={<CompressPDF />} />
+              <Route path="/optimize-web" element={<OptimizeWebPage />} />
+              <Route path="/reduce-size" element={<ReduceSizePage />} />
+              <Route path="/pdf-to-pdfa" element={<PdfToPdfAPage />} />
+
+              {/* Convert */}
+              <Route path="/pdf-to-word" element={<PdfToWordPage />} />
+              <Route path="/word-to-pdf" element={<WordToPdfPage />} />
+              <Route path="/pdf-to-jpg" element={<PdfToJpgPage />} />
+              <Route path="/jpg-to-pdf" element={<JpgToPdfPage />} />
+              <Route path="/pdf-to-ppt" element={<PdfToPptPage />} />
+              <Route path="/pdf-to-excel" element={<PdfToExcelPage />} />
+              <Route path="/pdf-to-text" element={<PdfToTextPage />} />
+              <Route path="/html-to-pdf" element={<HtmlToPdfPage />} />
+
+              {/* Edit */}
+              <Route path="/add-text" element={<AddTextPage />} />
+              <Route path="/add-image" element={<AddImagePage />} />
+              <Route path="/add-shapes" element={<AddShapesPage />} />
+              <Route path="/highlight" element={<HighlightPage />} />
+              <Route path="/redact" element={<RedactPage />} />
+              <Route path="/add-notes" element={<AddNotesPage />} />
+
+              {/* Security */}
+              <Route path="/unlock" element={<UnlockPage />} />
+              <Route path="/protect" element={<ProtectPage />} />
+              <Route path="/permissions" element={<PermissionsPage />} />
+              <Route path="/sign" element={<SignPage />} />
+              <Route path="/encrypt" element={<EncryptPage />} />
+              <Route path="/remove-metadata" element={<RemoveMetadataPage />} />
+
+              {/* Intelligence */}
+              <Route path="/watermark" element={<WatermarkPage />} />
+              <Route path="/page-numbers" element={<PageNumbersPage />} />
+              <Route path="/header-footer" element={<HeaderFooterPage />} />
+              <Route path="/compare" element={<ComparePage />} />
+              <Route path="/ocr" element={<OcrPage />} />
+              <Route path="/statistics" element={<StatisticsPage />} />
+
+              {/* Workflows */}
+              <Route path="/workflow-ebook" element={<WorkflowEbookPage />} />
+              <Route path="/workflow-secure" element={<WorkflowSecurePage />} />
+              <Route path="/workflow-extract" element={<WorkflowExtractPage />} />
+
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </TooltipProvider>
+        </AuthProvider>
       </ThemeProvider>
     </BrowserRouter>
   </QueryClientProvider>

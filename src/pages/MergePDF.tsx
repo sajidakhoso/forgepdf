@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ArrowLeft, Download } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -8,6 +8,8 @@ import Footer from '@/components/Footer';
 import FileUpload from '@/components/FileUpload';
 import ProcessingButton from '@/components/ProcessingButton';
 import { mergePDFs } from '@/lib/pdf-tools';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 
 const MergePDF = () => {
   const [files, setFiles] = useState<File[]>([]);

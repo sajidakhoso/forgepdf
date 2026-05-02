@@ -1,13 +1,15 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, Star, Users, FileText, Zap } from 'lucide-react';
+import { ArrowRight, Star, Users, FileText, Zap, Clock } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ToolCard from '@/components/ToolCard';
 import CategoryBar, { type ToolCategory } from '@/components/CategoryBar';
 import { tools } from '@/data/tools';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 
 const stats = [
   { icon: FileText, value: '2.5M+', label: 'PDFs Processed' },

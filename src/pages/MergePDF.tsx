@@ -12,10 +12,17 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 
 const MergePDF = () => {
+  const { user } = useAuth();
   const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Blob | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (user) {
+      supabase.from('tool_usage_history').insert({ user_id: user.id, tool_name: 'Merge PDF', tool_path: '/merge' }).then(() => {});
+    }
+  }, [user]);
 
   const handleMerge = async () => {
     if (files.length < 2) { setError('Please upload at least 2 PDF files.'); return; }

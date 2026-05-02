@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ArrowLeft, Download } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -8,12 +8,21 @@ import Footer from '@/components/Footer';
 import FileUpload from '@/components/FileUpload';
 import ProcessingButton from '@/components/ProcessingButton';
 import { mergePDFs } from '@/lib/pdf-tools';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 
 const MergePDF = () => {
+  const { user } = useAuth();
   const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Blob | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (user) {
+      supabase.from('tool_usage_history').insert({ user_id: user.id, tool_name: 'Merge PDF', tool_path: '/merge' }).then(() => {});
+    }
+  }, [user]);
 
   const handleMerge = async () => {
     if (files.length < 2) { setError('Please upload at least 2 PDF files.'); return; }

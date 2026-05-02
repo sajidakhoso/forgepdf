@@ -20,6 +20,13 @@ export interface Tool {
 }
 
 export const tools: Tool[] = [
+  // ⭐ Popular Conversion Tools (featured at top)
+  { title: 'PDF to Word', description: 'Convert PDF to editable DOCX', icon: FileOutput, category: 'convert', colorVar: 'pdf-word', path: '/pdf-to-word' },
+  { title: 'Word to PDF', description: 'Convert Word documents to PDF', icon: FileInput, category: 'convert', colorVar: 'word-pdf', path: '/word-to-pdf' },
+  { title: 'PDF to JPG', description: 'Convert pages to JPG images', icon: Image, category: 'convert', colorVar: 'jpg', path: '/pdf-to-jpg' },
+  { title: 'JPG to PDF', description: 'Convert images to PDF', icon: FileInput, category: 'convert', colorVar: 'jpg', path: '/jpg-to-pdf' },
+  { title: 'PDF to Excel', description: 'Extract tables to spreadsheets', icon: Table2, category: 'convert', colorVar: 'excel', path: '/pdf-to-excel' },
+
   // Organize PDF
   { title: 'Merge PDF', description: 'Combine multiple PDFs into one', icon: Layers, category: 'organize', colorVar: 'merge', path: '/merge' },
   { title: 'Split PDF', description: 'Separate pages from your PDF', icon: Scissors, category: 'organize', colorVar: 'split', path: '/split' },
@@ -34,13 +41,8 @@ export const tools: Tool[] = [
   { title: 'Reduce PDF Size', description: 'Advanced compression options', icon: ArrowDownCircle, category: 'optimize', colorVar: 'compress', path: '/reduce-size' },
   { title: 'PDF to PDF/A', description: 'Convert to archive format', icon: Archive, category: 'optimize', colorVar: 'compress', path: '/pdf-to-pdfa' },
 
-  // Convert PDF
-  { title: 'PDF to Word', description: 'Convert PDF to editable DOCX', icon: FileOutput, category: 'convert', colorVar: 'pdf-word', path: '/pdf-to-word' },
-  { title: 'Word to PDF', description: 'Convert Word documents to PDF', icon: FileInput, category: 'convert', colorVar: 'word-pdf', path: '/word-to-pdf' },
-  { title: 'PDF to JPG', description: 'Convert pages to JPG images', icon: Image, category: 'convert', colorVar: 'jpg', path: '/pdf-to-jpg' },
-  { title: 'JPG to PDF', description: 'Convert images to PDF', icon: FileInput, category: 'convert', colorVar: 'jpg', path: '/jpg-to-pdf' },
+  // Convert PDF (remaining)
   { title: 'PDF to PowerPoint', description: 'Turn PDFs into presentations', icon: Presentation, category: 'convert', colorVar: 'ppt', path: '/pdf-to-ppt' },
-  { title: 'PDF to Excel', description: 'Extract tables to spreadsheets', icon: Table2, category: 'convert', colorVar: 'excel', path: '/pdf-to-excel' },
   { title: 'PDF to Text', description: 'Extract plain text from PDF', icon: FileText, category: 'convert', colorVar: 'pdf-word', path: '/pdf-to-text' },
   { title: 'HTML to PDF', description: 'Convert web pages to PDF', icon: Code, category: 'convert', colorVar: 'rotate', path: '/html-to-pdf' },
 

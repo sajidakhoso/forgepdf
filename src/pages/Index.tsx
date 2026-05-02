@@ -1,13 +1,15 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, Star, Users, FileText, Zap } from 'lucide-react';
+import { ArrowRight, Star, Users, FileText, Zap, Clock } from 'lucide-react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ToolCard from '@/components/ToolCard';
 import CategoryBar, { type ToolCategory } from '@/components/CategoryBar';
 import { tools } from '@/data/tools';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 
 const stats = [
   { icon: FileText, value: '2.5M+', label: 'PDFs Processed' },
@@ -27,7 +29,38 @@ const item = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } };
 
 const Index = () => {
   const navigate = useNavigate();
+  const { user, profile } = useAuth();
   const [category, setCategory] = useState<ToolCategory>('all');
+  const [recentTools, setRecentTools] = useState<{ tool_name: string; tool_path: string; created_at: string }[]>([]);
+
+  useEffect(() => {
+    if (user) {
+      supabase
+        .from('tool_usage_history')
+        .select('tool_name, tool_path, created_at')
+        .order('created_at', { ascending: false })
+        .limit(6)
+        .then(({ data }) => {
+          if (data) {
+            // Deduplicate by tool_path, keep most recent
+            const seen = new Set<string>();
+            const unique = data.filter(d => {
+              if (seen.has(d.tool_path)) return false;
+              seen.add(d.tool_path);
+              return true;
+            });
+            setRecentTools(unique.slice(0, 5));
+          }
+        });
+    }
+  }, [user]);
+
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 17) return 'Good afternoon';
+    return 'Good evening';
+  };
 
   const filtered = category === 'all' ? tools : tools.filter((t) => t.category === category);
 
@@ -78,9 +111,45 @@ const Index = () => {
           <div className="absolute top-0 left-1/4 w-48 md:w-72 h-48 md:h-72 bg-primary/10 rounded-full blur-3xl" />
           <div className="absolute bottom-0 right-1/4 w-48 md:w-72 h-48 md:h-72 bg-accent/10 rounded-full blur-3xl" />
         </section>
+        {/* Greeting + Recent Tools for logged-in users */}
+        {user && profile && (
+          <section className="container py-8 md:py-10 max-w-6xl px-4">
+            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
+              <h2 className="font-display text-xl md:text-2xl font-bold mb-1">
+                {getGreeting()}, <span className="gradient-text">{profile.username}</span> 👋
+              </h2>
+              <p className="text-muted-foreground text-sm mb-4">Welcome back to Forge PDF</p>
+            </motion.div>
+
+            {recentTools.length > 0 && (
+              <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+                <div className="flex items-center gap-2 mb-3">
+                  <Clock className="h-4 w-4 text-muted-foreground" />
+                  <h3 className="text-sm font-semibold text-muted-foreground">Recently Used</h3>
+                </div>
+                <div className="flex gap-2 overflow-x-auto pb-2" style={{ scrollbarWidth: 'none' }}>
+                  {recentTools.map((rt, i) => {
+                    const toolData = tools.find(t => t.path === rt.tool_path);
+                    if (!toolData) return null;
+                    return (
+                      <button
+                        key={i}
+                        onClick={() => navigate(rt.tool_path)}
+                        className="flex items-center gap-2 px-4 py-2.5 rounded-xl glass border border-border hover:border-primary/30 transition-all shrink-0"
+                      >
+                        <toolData.icon className={`h-4 w-4 text-tool-${toolData.colorVar}`} />
+                        <span className="text-sm font-medium whitespace-nowrap">{rt.tool_name}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </motion.div>
+            )}
+          </section>
+        )}
 
         {/* Category Bar + Tools Grid */}
-        <section className="container py-10 md:py-16 max-w-6xl px-4">
+        <section id="tools-section" className="container py-10 md:py-16 max-w-6xl px-4">
           <motion.h2
             initial={{ opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}

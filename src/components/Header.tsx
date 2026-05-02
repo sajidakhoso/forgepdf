@@ -1,5 +1,5 @@
 import { FileText, LogIn, LogOut, LayoutDashboard, Bell, User, ChevronDown, Sun, Moon, Menu, X } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -9,9 +9,21 @@ const Header = () => {
   const { user, profile, signOut } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
+  const location = useLocation();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const handleToolsClick = () => {
+    if (location.pathname === '/') {
+      document.getElementById('tools-section')?.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      navigate('/');
+      setTimeout(() => {
+        document.getElementById('tools-section')?.scrollIntoView({ behavior: 'smooth' });
+      }, 300);
+    }
+  };
 
   const handleLogout = async () => {
     await signOut();
@@ -30,7 +42,7 @@ const Header = () => {
 
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-3">
-          <Link to="/" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Tools</Link>
+          <button onClick={handleToolsClick} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Tools</button>
           <Link to="/about" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">About</Link>
           <Button variant="ghost" size="icon" onClick={toggleTheme} className="shrink-0">
             {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
@@ -104,9 +116,9 @@ const Header = () => {
       {/* Mobile Menu */}
       {mobileMenuOpen && (
         <div className="md:hidden border-t border-border glass px-4 py-4 space-y-2">
-          <Link to="/" onClick={() => setMobileMenuOpen(false)} className="block px-3 py-2.5 rounded-lg text-sm font-medium text-foreground hover:bg-muted/50 transition-colors">
+          <button onClick={() => { handleToolsClick(); setMobileMenuOpen(false); }} className="w-full text-left block px-3 py-2.5 rounded-lg text-sm font-medium text-foreground hover:bg-muted/50 transition-colors">
             Tools
-          </Link>
+          </button>
           <Link to="/about" onClick={() => setMobileMenuOpen(false)} className="block px-3 py-2.5 rounded-lg text-sm font-medium text-foreground hover:bg-muted/50 transition-colors">
             About
           </Link>

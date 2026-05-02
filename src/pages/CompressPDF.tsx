@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ArrowLeft, Download } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -9,13 +9,22 @@ import FileUpload from '@/components/FileUpload';
 import ProcessingButton from '@/components/ProcessingButton';
 import { compressPDF, formatFileSize } from '@/lib/pdf-tools';
 import { Slider } from '@/components/ui/slider';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 
 const CompressPDF = () => {
+  const { user } = useAuth();
   const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{ blob: Blob; originalSize: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [quality, setQuality] = useState(0.5);
+
+  useEffect(() => {
+    if (user) {
+      supabase.from('tool_usage_history').insert({ user_id: user.id, tool_name: 'Compress PDF', tool_path: '/compress' }).then(() => {});
+    }
+  }, [user]);
 
   const qualityLabel = quality < 0.4 ? 'High Compression' : quality < 0.7 ? 'Balanced' : 'Low Compression';
 

@@ -1,4 +1,4 @@
-import { ReactNode, useState } from 'react';
+import { ReactNode, useState, useEffect } from 'react';
 import { ArrowLeft, Download } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -7,10 +7,13 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import FileUpload from '@/components/FileUpload';
 import ProcessingButton from '@/components/ProcessingButton';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 
 interface ToolPageProps {
   title: string;
   description: string;
+  toolPath?: string;
   accept?: string;
   multiple?: boolean;
   minFiles?: number;
@@ -25,14 +28,26 @@ interface ToolPageProps {
 }
 
 const ToolPage = ({
-  title, description, accept = '.pdf', multiple = false, minFiles = 1,
+  title, description, toolPath, accept = '.pdf', multiple = false, minFiles = 1,
   uploadLabel, buttonLabel, outputName, process, controls,
   hideUpload, noFilesNeeded, customRun,
 }: ToolPageProps) => {
+  const { user } = useAuth();
   const [files, setFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<Blob | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  // Log tool usage on mount for logged-in users
+  useEffect(() => {
+    if (user && toolPath) {
+      supabase.from('tool_usage_history').insert({
+        user_id: user.id,
+        tool_name: title,
+        tool_path: toolPath,
+      }).then(() => {});
+    }
+  }, [user, toolPath, title]);
 
   const handleRun = async () => {
     if (!noFilesNeeded && files.length < minFiles) {

@@ -35,8 +35,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (session?.user) {
         setIsGuest(false);
         localStorage.removeItem('guest_mode');
-        // Defer profile fetch to avoid deadlock
-        setTimeout(() => fetchProfile(session.user.id), 0);
+        // Set immediate fallback from user metadata
+        const meta = session.user.user_metadata;
+        const fallbackName = meta?.username || meta?.full_name || session.user.email?.split('@')[0] || 'User';
+        setProfile(prev => prev ?? { username: fallbackName, email: session.user.email ?? null });
+        // Then fetch real profile
+        setTimeout(() => fetchProfile(session.user.id, fallbackName), 0);
       } else {
         setProfile(null);
       }

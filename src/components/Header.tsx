@@ -9,9 +9,21 @@ const Header = () => {
   const { user, profile, signOut } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
+  const location = useLocation();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const handleToolsClick = () => {
+    if (location.pathname === '/') {
+      document.getElementById('tools-section')?.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      navigate('/');
+      setTimeout(() => {
+        document.getElementById('tools-section')?.scrollIntoView({ behavior: 'smooth' });
+      }, 300);
+    }
+  };
 
   const handleLogout = async () => {
     await signOut();

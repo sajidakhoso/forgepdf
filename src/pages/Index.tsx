@@ -80,7 +80,7 @@ const Index = () => {
         </section>
 
         {/* Category Bar + Tools Grid */}
-        <section className="container py-10 md:py-16 max-w-6xl px-4">
+        <section id="tools-section" className="container py-10 md:py-16 max-w-6xl px-4">
           <motion.h2
             initial={{ opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}

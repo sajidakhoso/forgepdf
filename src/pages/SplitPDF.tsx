@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -8,13 +8,22 @@ import FileUpload from '@/components/FileUpload';
 import ProcessingButton from '@/components/ProcessingButton';
 import { splitPDF } from '@/lib/pdf-tools';
 import { Input } from '@/components/ui/input';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 
 const SplitPDF = () => {
+  const { user } = useAuth();
   const [files, setFiles] = useState<File[]>([]);
   const [pageRange, setPageRange] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      supabase.from('tool_usage_history').insert({ user_id: user.id, tool_name: 'Split PDF', tool_path: '/split' }).then(() => {});
+    }
+  }, [user]);
 
   const handleSplit = async () => {
     if (files.length === 0) { setError('Please upload a PDF file.'); return; }

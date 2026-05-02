@@ -50,7 +50,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        fetchProfile(session.user.id);
+        const meta = session.user.user_metadata;
+        const fallback = meta?.username || meta?.full_name || session.user.email?.split('@')[0] || 'User';
+        setProfile({ username: fallback, email: session.user.email ?? null });
+        fetchProfile(session.user.id, fallback);
       }
       setLoading(false);
     });

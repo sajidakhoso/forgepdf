@@ -71,6 +71,30 @@ export type Database = {
         }
         Relationships: []
       }
+      tool_usage_history: {
+        Row: {
+          created_at: string
+          id: string
+          tool_name: string
+          tool_path: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          tool_name: string
+          tool_path: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          tool_name?: string
+          tool_path?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

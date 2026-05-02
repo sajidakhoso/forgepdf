@@ -58,9 +58,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const fetchProfile = async (userId: string) => {
+  const fetchProfile = async (userId: string, fallbackName?: string) => {
     const { data } = await supabase.from('profiles').select('username, email').eq('user_id', userId).single();
-    if (data) setProfile(data);
+    if (data) {
+      setProfile(data);
+    } else if (fallbackName) {
+      // Profile not yet created, keep fallback
+      setProfile(prev => prev ?? { username: fallbackName, email: null });
+    }
   };
 
   const signUp = async (email: string, password: string, username: string) => {

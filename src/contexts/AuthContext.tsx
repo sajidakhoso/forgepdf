@@ -35,8 +35,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (session?.user) {
         setIsGuest(false);
         localStorage.removeItem('guest_mode');
-        // Defer profile fetch to avoid deadlock
-        setTimeout(() => fetchProfile(session.user.id), 0);
+        // Set immediate fallback from user metadata
+        const meta = session.user.user_metadata;
+        const fallbackName = meta?.username || meta?.full_name || session.user.email?.split('@')[0] || 'User';
+        setProfile(prev => prev ?? { username: fallbackName, email: session.user.email ?? null });
+        // Then fetch real profile
+        setTimeout(() => fetchProfile(session.user.id, fallbackName), 0);
       } else {
         setProfile(null);
       }
@@ -46,7 +50,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        fetchProfile(session.user.id);
+        const meta = session.user.user_metadata;
+        const fallback = meta?.username || meta?.full_name || session.user.email?.split('@')[0] || 'User';
+        setProfile({ username: fallback, email: session.user.email ?? null });
+        fetchProfile(session.user.id, fallback);
       }
       setLoading(false);
     });
@@ -54,9 +61,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const fetchProfile = async (userId: string) => {
+  const fetchProfile = async (userId: string, fallbackName?: string) => {
     const { data } = await supabase.from('profiles').select('username, email').eq('user_id', userId).single();
-    if (data) setProfile(data);
+    if (data) {
+      setProfile(data);
+    } else if (fallbackName) {
+      // Profile not yet created, keep fallback
+      setProfile(prev => prev ?? { username: fallbackName, email: null });
+    }
   };
 
   const signUp = async (email: string, password: string, username: string) => {

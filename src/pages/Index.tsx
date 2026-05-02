@@ -29,7 +29,38 @@ const item = { hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0 } };
 
 const Index = () => {
   const navigate = useNavigate();
+  const { user, profile } = useAuth();
   const [category, setCategory] = useState<ToolCategory>('all');
+  const [recentTools, setRecentTools] = useState<{ tool_name: string; tool_path: string; created_at: string }[]>([]);
+
+  useEffect(() => {
+    if (user) {
+      supabase
+        .from('tool_usage_history')
+        .select('tool_name, tool_path, created_at')
+        .order('created_at', { ascending: false })
+        .limit(6)
+        .then(({ data }) => {
+          if (data) {
+            // Deduplicate by tool_path, keep most recent
+            const seen = new Set<string>();
+            const unique = data.filter(d => {
+              if (seen.has(d.tool_path)) return false;
+              seen.add(d.tool_path);
+              return true;
+            });
+            setRecentTools(unique.slice(0, 5));
+          }
+        });
+    }
+  }, [user]);
+
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 17) return 'Good afternoon';
+    return 'Good evening';
+  };
 
   const filtered = category === 'all' ? tools : tools.filter((t) => t.category === category);
 

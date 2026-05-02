@@ -116,9 +116,9 @@ const Header = () => {
       {/* Mobile Menu */}
       {mobileMenuOpen && (
         <div className="md:hidden border-t border-border glass px-4 py-4 space-y-2">
-          <Link to="/" onClick={() => setMobileMenuOpen(false)} className="block px-3 py-2.5 rounded-lg text-sm font-medium text-foreground hover:bg-muted/50 transition-colors">
+          <button onClick={() => { handleToolsClick(); setMobileMenuOpen(false); }} className="w-full text-left block px-3 py-2.5 rounded-lg text-sm font-medium text-foreground hover:bg-muted/50 transition-colors">
             Tools
-          </Link>
+          </button>
           <Link to="/about" onClick={() => setMobileMenuOpen(false)} className="block px-3 py-2.5 rounded-lg text-sm font-medium text-foreground hover:bg-muted/50 transition-colors">
             About
           </Link>

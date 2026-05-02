@@ -42,7 +42,7 @@ const Header = () => {
 
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-3">
-          <Link to="/" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Tools</Link>
+          <button onClick={handleToolsClick} className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Tools</button>
           <Link to="/about" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">About</Link>
           <Button variant="ghost" size="icon" onClick={toggleTheme} className="shrink-0">
             {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}

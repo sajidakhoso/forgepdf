@@ -20,6 +20,13 @@ export interface Tool {
 }
 
 export const tools: Tool[] = [
+  // ⭐ Popular Conversion Tools (featured at top)
+  { title: 'PDF to Word', description: 'Convert PDF to editable DOCX', icon: FileOutput, category: 'convert', colorVar: 'pdf-word', path: '/pdf-to-word' },
+  { title: 'Word to PDF', description: 'Convert Word documents to PDF', icon: FileInput, category: 'convert', colorVar: 'word-pdf', path: '/word-to-pdf' },
+  { title: 'PDF to JPG', description: 'Convert pages to JPG images', icon: Image, category: 'convert', colorVar: 'jpg', path: '/pdf-to-jpg' },
+  { title: 'JPG to PDF', description: 'Convert images to PDF', icon: FileInput, category: 'convert', colorVar: 'jpg', path: '/jpg-to-pdf' },
+  { title: 'PDF to Excel', description: 'Extract tables to spreadsheets', icon: Table2, category: 'convert', colorVar: 'excel', path: '/pdf-to-excel' },
+
   // Organize PDF
   { title: 'Merge PDF', description: 'Combine multiple PDFs into one', icon: Layers, category: 'organize', colorVar: 'merge', path: '/merge' },
   { title: 'Split PDF', description: 'Separate pages from your PDF', icon: Scissors, category: 'organize', colorVar: 'split', path: '/split' },

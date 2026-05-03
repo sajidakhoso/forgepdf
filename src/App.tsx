@@ -13,6 +13,7 @@ import CompressPDF from "./pages/CompressPDF";
 import About from "./pages/About";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
+import AISummary from "./pages/AISummary";
 import {
   RotatePage, DeletePagesPage, ReorderPagesPage, ExtractPagesPage,
   OptimizeWebPage, ReduceSizePage, PdfToPdfAPage,
@@ -87,6 +88,9 @@ const App = () => (
               <Route path="/compare" element={<ComparePage />} />
               <Route path="/ocr" element={<OcrPage />} />
               <Route path="/statistics" element={<StatisticsPage />} />
+
+              {/* AI */}
+              <Route path="/ai-summary" element={<AISummary />} />
 
               {/* Workflows */}
               <Route path="/workflow-ebook" element={<WorkflowEbookPage />} />

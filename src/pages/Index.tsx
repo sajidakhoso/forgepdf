@@ -55,11 +55,21 @@ const Index = () => {
     }
   }, [user]);
 
+  const getDisplayName = () => {
+    if (!profile) return null;
+    const name = profile.full_name || profile.username;
+    if (!name || name === 'User') return null;
+    // Return first name only
+    return name.split(' ')[0];
+  };
+
   const getGreeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return 'Good morning';
-    if (hour < 17) return 'Good afternoon';
-    return 'Good evening';
+    const firstName = getDisplayName();
+    const isReturning = recentTools.length > 0;
+    if (firstName) {
+      return isReturning ? `Welcome back, ${firstName}!` : `Welcome, ${firstName}!`;
+    }
+    return 'Welcome!';
   };
 
   const filtered = category === 'all' ? tools : tools.filter((t) => t.category === category);
@@ -116,7 +126,7 @@ const Index = () => {
           <section className="container py-8 md:py-10 max-w-6xl px-4">
             <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
               <h2 className="font-display text-xl md:text-2xl font-bold mb-1">
-                {getGreeting()}, <span className="gradient-text">{profile.username}</span> 👋
+                {getGreeting()} <span className="inline-block">👋</span>
               </h2>
               <p className="text-muted-foreground text-sm mb-4">Welcome back to Forge PDF</p>
             </motion.div>

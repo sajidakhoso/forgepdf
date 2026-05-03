@@ -14,7 +14,7 @@ const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [username, setUsername] = useState('');
+  const [fullName, setFullName] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -30,7 +30,7 @@ const Auth = () => {
         toast({ title: '🎉 Welcome back!', description: 'You have signed in successfully.' });
         navigate('/');
       } else {
-        await signUp(email, password, username);
+        await signUp(email, password, fullName);
         toast({ title: '🎉 Account created!', description: 'You are now signed in.' });
         navigate('/');
       }
@@ -74,13 +74,13 @@ const Auth = () => {
             <form onSubmit={handleSubmit} className="space-y-4">
               {!isLogin && (
                 <div className="space-y-2">
-                  <Label htmlFor="username">Username</Label>
+                  <Label htmlFor="fullName">Full Name</Label>
                   <Input
-                    id="username"
+                    id="fullName"
                     type="text"
-                    placeholder="yourname"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="John Doe"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
                     required={!isLogin}
                     minLength={2}
                   />

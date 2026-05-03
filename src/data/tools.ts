@@ -5,7 +5,7 @@ import {
   Type, ImagePlus, Shapes, Highlighter, EyeOff, StickyNote,
   Lock, Unlock, ShieldCheck, Pen, KeyRound, FileX,
   Droplets, Hash, AlignLeft, GitCompare, ScanText, BarChart3,
-  BookOpen, ShieldAlert, PackageOpen
+  BookOpen, ShieldAlert, PackageOpen, Sparkles
 } from 'lucide-react';
 import type { ToolCategory } from '@/components/CategoryBar';
 import { LucideIcon } from 'lucide-react';
@@ -20,6 +20,9 @@ export interface Tool {
 }
 
 export const tools: Tool[] = [
+  // ⭐ AI Tools
+  { title: 'AI Summary', description: 'Get AI-powered summary & highlights', icon: Sparkles, category: 'intelligence', colorVar: 'edit', path: '/ai-summary' },
+
   // ⭐ Popular Conversion Tools (featured at top)
   { title: 'PDF to Word', description: 'Convert PDF to editable DOCX', icon: FileOutput, category: 'convert', colorVar: 'pdf-word', path: '/pdf-to-word' },
   { title: 'Word to PDF', description: 'Convert Word documents to PDF', icon: FileInput, category: 'convert', colorVar: 'word-pdf', path: '/word-to-pdf' },

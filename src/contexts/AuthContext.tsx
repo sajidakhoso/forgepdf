@@ -4,6 +4,7 @@ import type { User, Session } from '@supabase/supabase-js';
 
 interface Profile {
   username: string;
+  full_name: string | null;
   email: string | null;
 }
 
@@ -37,8 +38,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         localStorage.removeItem('guest_mode');
         // Set immediate fallback from user metadata
         const meta = session.user.user_metadata;
-        const fallbackName = meta?.username || meta?.full_name || session.user.email?.split('@')[0] || 'User';
-        setProfile(prev => prev ?? { username: fallbackName, email: session.user.email ?? null });
+        const fallbackName = meta?.full_name || meta?.username || session.user.email?.split('@')[0] || 'User';
+        setProfile(prev => prev ?? { username: fallbackName, full_name: meta?.full_name || null, email: session.user.email ?? null });
         // Then fetch real profile
         setTimeout(() => fetchProfile(session.user.id, fallbackName), 0);
       } else {
@@ -51,8 +52,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setUser(session?.user ?? null);
       if (session?.user) {
         const meta = session.user.user_metadata;
-        const fallback = meta?.username || meta?.full_name || session.user.email?.split('@')[0] || 'User';
-        setProfile({ username: fallback, email: session.user.email ?? null });
+        const fallback = meta?.full_name || meta?.username || session.user.email?.split('@')[0] || 'User';
+        setProfile({ username: fallback, full_name: meta?.full_name || null, email: session.user.email ?? null });
         fetchProfile(session.user.id, fallback);
       }
       setLoading(false);
@@ -62,21 +63,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const fetchProfile = async (userId: string, fallbackName?: string) => {
-    const { data } = await supabase.from('profiles').select('username, email').eq('user_id', userId).single();
+    const { data } = await supabase.from('profiles').select('username, email, full_name').eq('user_id', userId).single();
     if (data) {
       setProfile(data);
     } else if (fallbackName) {
-      // Profile not yet created, keep fallback
-      setProfile(prev => prev ?? { username: fallbackName, email: null });
+      setProfile(prev => prev ?? { username: fallbackName, full_name: null, email: null });
     }
   };
 
-  const signUp = async (email: string, password: string, username: string) => {
+  const signUp = async (email: string, password: string, fullName: string) => {
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
-        data: { username },
+        data: { full_name: fullName, username: fullName },
         emailRedirectTo: window.location.origin,
       },
     });

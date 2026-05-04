@@ -221,7 +221,7 @@ const AISummary = () => {
                 >
                   <div className="text-center space-y-2 text-muted-foreground">
                     <Upload className="h-8 w-8 mx-auto opacity-40" />
-                    <p className="text-sm">Upload a PDF and click "AI Summary" to see results here.</p>
+                    <p className="text-sm">Upload a document and click "AI Summary" to see results here.</p>
                   </div>
                 </motion.div>
               )}

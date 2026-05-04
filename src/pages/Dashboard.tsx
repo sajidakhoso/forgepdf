@@ -95,7 +95,7 @@ const Dashboard = () => {
         <div className="container max-w-6xl px-4">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
             <h1 className="font-display text-2xl md:text-3xl font-bold mb-1">
-              Welcome back, <span className="gradient-text">{profile?.username || 'User'}</span>
+              Welcome back, <span className="gradient-text">{profile?.full_name?.split(' ')[0] || profile?.username || 'User'}</span>
             </h1>
             <p className="text-muted-foreground text-sm md:text-base mb-6 md:mb-8">Manage your saved files and recent activity</p>
           </motion.div>
@@ -267,7 +267,7 @@ const Dashboard = () => {
               <div className="space-y-4">
                 <div>
                   <label className="text-xs md:text-sm font-medium text-muted-foreground">Username</label>
-                  <p className="text-foreground text-sm md:text-base">{profile?.username || 'N/A'}</p>
+                  <p className="text-foreground text-sm md:text-base">{profile?.full_name || profile?.username || 'N/A'}</p>
                 </div>
                 <div>
                   <label className="text-xs md:text-sm font-medium text-muted-foreground">Email</label>

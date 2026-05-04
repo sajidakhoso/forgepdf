@@ -3,6 +3,7 @@ import { ArrowLeft, Sparkles, Loader2, Upload } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import * as pdfjsLib from 'pdfjs-dist';
+import mammoth from 'mammoth';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import FileUpload from '@/components/FileUpload';
@@ -13,6 +14,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
+
+const SUPPORTED_EXTENSIONS = '.pdf,.doc,.docx,.txt,.rtf,.md';
 
 interface AnalysisResult {
   summary: string[];
@@ -36,7 +39,7 @@ const AISummary = () => {
     }
   }, [user]);
 
-  const extractText = async (file: File): Promise<string> => {
+  const extractTextFromPdf = async (file: File): Promise<string> => {
     const arrayBuffer = await file.arrayBuffer();
     const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
     const texts: string[] = [];
@@ -48,9 +51,36 @@ const AISummary = () => {
     return texts.join('\n');
   };
 
+  const extractTextFromDocx = async (file: File): Promise<string> => {
+    const arrayBuffer = await file.arrayBuffer();
+    const result = await mammoth.extractRawText({ arrayBuffer });
+    return result.value;
+  };
+
+  const extractTextFromPlain = async (file: File): Promise<string> => {
+    return await file.text();
+  };
+
+  const extractText = async (file: File): Promise<string> => {
+    const ext = file.name.split('.').pop()?.toLowerCase() || '';
+    switch (ext) {
+      case 'pdf':
+        return extractTextFromPdf(file);
+      case 'docx':
+      case 'doc':
+        return extractTextFromDocx(file);
+      case 'txt':
+      case 'md':
+      case 'rtf':
+        return extractTextFromPlain(file);
+      default:
+        throw new Error(`Unsupported file format: .${ext}`);
+    }
+  };
+
   const handleAnalyze = async () => {
     if (!files.length) {
-      toast.error('Please upload a PDF file first.');
+      toast.error('Please upload a document first.');
       return;
     }
     setLoading(true);
@@ -58,7 +88,7 @@ const AISummary = () => {
     try {
       const text = await extractText(files[0]);
       if (!text.trim()) {
-        toast.error('Could not extract text from this PDF. It may be scanned or image-based.');
+        toast.error('Could not extract text from this file. It may be scanned or image-based.');
         setLoading(false);
         return;
       }
@@ -93,12 +123,12 @@ const AISummary = () => {
             <Sparkles className="h-6 w-6 text-accent" />
             <h1 className="font-display text-3xl font-bold">AI Summary & Highlights</h1>
           </div>
-          <p className="text-muted-foreground mb-8">Upload a PDF and get an AI-powered summary, key highlights, and topic extraction.</p>
+          <p className="text-muted-foreground mb-8">Upload a PDF, DOCX, TXT, or other document and get an AI-powered summary, key highlights, and topic extraction.</p>
 
           <div className="grid md:grid-cols-2 gap-8">
             {/* Left: Upload + Trigger */}
             <div className="space-y-6">
-              <FileUpload accept=".pdf" multiple={false} files={files} onFilesChange={setFiles} label="Drop your PDF here" />
+              <FileUpload accept={SUPPORTED_EXTENSIONS} multiple={false} files={files} onFilesChange={setFiles} label="Drop your document here (PDF, DOCX, TXT, MD)" />
 
               <Button
                 onClick={handleAnalyze}

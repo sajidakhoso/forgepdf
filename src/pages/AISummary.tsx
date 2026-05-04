@@ -67,8 +67,10 @@ const AISummary = () => {
       case 'pdf':
         return extractTextFromPdf(file);
       case 'docx':
-      case 'doc':
         return extractTextFromDocx(file);
+      case 'doc':
+        toast.info('Legacy .doc format detected — for best results, save as .docx first.');
+        return extractTextFromPlain(file);
       case 'txt':
       case 'md':
       case 'rtf':

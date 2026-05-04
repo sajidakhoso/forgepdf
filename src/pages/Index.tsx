@@ -57,9 +57,15 @@ const Index = () => {
 
   const getDisplayName = () => {
     if (!profile) return null;
-    const name = profile.full_name;
-    if (!name || name === 'User' || name === profile.username) {
-      // full_name is missing or same as auto-generated username — don't show it
+    const name = profile.full_name?.trim();
+    if (
+      !name ||
+      name.toLowerCase() === 'user' ||
+      name.includes('@') ||
+      name === profile.username ||
+      /^user\d+/i.test(name) ||
+      /^username\d*/i.test(name)
+    ) {
       return null;
     }
     return name.split(' ')[0];
@@ -69,9 +75,9 @@ const Index = () => {
     const firstName = getDisplayName();
     const isReturning = recentTools.length > 0;
     if (firstName) {
-      return isReturning ? `Welcome back, ${firstName}!` : `Welcome, ${firstName}!`;
+      return isReturning ? `Welcome back, ${firstName}! 👋` : `Welcome, ${firstName}! 👋`;
     }
-    return 'Welcome!';
+    return 'Welcome! 👋';
   };
 
   const filtered = category === 'all' ? tools : tools.filter((t) => t.category === category);

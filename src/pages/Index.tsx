@@ -75,9 +75,9 @@ const Index = () => {
     const firstName = getDisplayName();
     const isReturning = recentTools.length > 0;
     if (firstName) {
-      return isReturning ? `Welcome back, ${firstName}!` : `Welcome, ${firstName}!`;
+      return isReturning ? `Welcome back, ${firstName}! 👋` : `Welcome, ${firstName}! 👋`;
     }
-    return 'Welcome!';
+    return 'Welcome! 👋';
   };
 
   const filtered = category === 'all' ? tools : tools.filter((t) => t.category === category);

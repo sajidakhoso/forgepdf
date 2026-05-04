@@ -95,7 +95,13 @@ const Dashboard = () => {
         <div className="container max-w-6xl px-4">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
             <h1 className="font-display text-2xl md:text-3xl font-bold mb-1">
-              Welcome back, <span className="gradient-text">{profile?.full_name?.split(' ')[0] || profile?.username || 'User'}</span>
+              {(() => {
+                const name = profile?.full_name?.trim();
+                const isValid = name && name.toLowerCase() !== 'user' && !name.includes('@') && !/^user(name)?\d*/i.test(name);
+                return isValid
+                  ? <>Welcome back, <span className="gradient-text">{name.split(' ')[0]}</span> 👋</>
+                  : <>Welcome! 👋</>;
+              })()}
             </h1>
             <p className="text-muted-foreground text-sm md:text-base mb-6 md:mb-8">Manage your saved files and recent activity</p>
           </motion.div>

@@ -57,9 +57,11 @@ const Index = () => {
 
   const getDisplayName = () => {
     if (!profile) return null;
-    const name = profile.full_name || profile.username;
-    if (!name || name === 'User') return null;
-    // Return first name only
+    const name = profile.full_name;
+    if (!name || name === 'User' || name === profile.username) {
+      // full_name is missing or same as auto-generated username — don't show it
+      return null;
+    }
     return name.split(' ')[0];
   };
 

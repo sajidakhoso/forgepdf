@@ -14,6 +14,23 @@ const Header = () => {
   const [notifOpen, setNotifOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  const getHeaderName = () => {
+    if (!profile) return 'User';
+    const name = profile.full_name?.trim();
+    const emailPrefix = user?.email?.split('@')[0];
+    if (
+      !name ||
+      name.toLowerCase() === 'user' ||
+      name.includes('@') ||
+      name === profile.username ||
+      name.toLowerCase() === emailPrefix?.toLowerCase() ||
+      /^user(name)?\d*/i.test(name)
+    ) {
+      return 'User';
+    }
+    return name.split(' ')[0];
+  };
+
   const handleToolsClick = () => {
     if (location.pathname === '/') {
       document.getElementById('tools-section')?.scrollIntoView({ behavior: 'smooth' });
@@ -74,7 +91,7 @@ const Header = () => {
                   <div className="h-6 w-6 rounded-full gradient-primary flex items-center justify-center">
                     <User className="h-3.5 w-3.5 text-primary-foreground" />
                   </div>
-                  <span className="hidden md:inline text-sm">{profile?.full_name?.split(' ')[0] || profile?.username || 'User'}</span>
+                  <span className="hidden md:inline text-sm">{getHeaderName()}</span>
                   <ChevronDown className="h-3 w-3" />
                 </Button>
                 {dropdownOpen && (

@@ -14,6 +14,23 @@ const Header = () => {
   const [notifOpen, setNotifOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  const getHeaderName = () => {
+    if (!profile) return 'User';
+    const name = profile.full_name?.trim();
+    const emailPrefix = user?.email?.split('@')[0];
+    if (
+      !name ||
+      name.toLowerCase() === 'user' ||
+      name.includes('@') ||
+      name === profile.username ||
+      name.toLowerCase() === emailPrefix?.toLowerCase() ||
+      /^user(name)?\d*/i.test(name)
+    ) {
+      return 'User';
+    }
+    return name.split(' ')[0];
+  };
+
   const handleToolsClick = () => {
     if (location.pathname === '/') {
       document.getElementById('tools-section')?.scrollIntoView({ behavior: 'smooth' });

@@ -9,7 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { motion } from 'framer-motion';
 import {
   FileText, HardDrive, Clock, Trash2, Download, FolderOpen,
-  Search, LayoutGrid, List, FolderPlus, Settings, RotateCcw
+  Search, LayoutGrid, List, Settings, RotateCcw, History, Save, Pencil
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { Input } from '@/components/ui/input';
@@ -23,17 +23,28 @@ interface SavedFile {
   created_at: string;
 }
 
-type DashTab = 'files' | 'trash' | 'settings';
+interface HistoryEntry {
+  id: string;
+  tool_name: string;
+  file_name: string | null;
+  created_at: string;
+}
+
+type DashTab = 'files' | 'history' | 'trash' | 'settings';
 type ViewMode = 'list' | 'grid';
 
 const Dashboard = () => {
   const { user, profile, loading: authLoading } = useAuth();
   const [files, setFiles] = useState<SavedFile[]>([]);
+  const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<DashTab>('files');
   const [viewMode, setViewMode] = useState<ViewMode>('list');
   const [search, setSearch] = useState('');
   const [filterType, setFilterType] = useState('all');
+  const [editingName, setEditingName] = useState(false);
+  const [newName, setNewName] = useState('');
+  const [savingName, setSavingName] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -42,7 +53,10 @@ const Dashboard = () => {
   }, [user, authLoading, navigate]);
 
   useEffect(() => {
-    if (user) fetchFiles();
+    if (user) {
+      fetchFiles();
+      fetchHistory();
+    }
   }, [user]);
 
   const fetchFiles = async () => {
@@ -52,6 +66,15 @@ const Dashboard = () => {
       .order('created_at', { ascending: false });
     if (!error && data) setFiles(data);
     setLoading(false);
+  };
+
+  const fetchHistory = async () => {
+    const { data } = await supabase
+      .from('tool_usage_history')
+      .select('id, tool_name, created_at')
+      .order('created_at', { ascending: false })
+      .limit(50);
+    if (data) setHistory(data.map(d => ({ ...d, file_name: null })));
   };
 
   const deleteFile = async (id: string) => {
@@ -76,6 +99,45 @@ const Dashboard = () => {
     return `${(bytes / 1048576).toFixed(1)} MB`;
   };
 
+  const getDisplayName = () => {
+    if (!profile) return null;
+    const name = profile.full_name?.trim();
+    const emailPrefix = user?.email?.split('@')[0];
+    if (
+      !name ||
+      name.toLowerCase() === 'user' ||
+      name.includes('@') ||
+      name === profile.username ||
+      name.toLowerCase() === emailPrefix?.toLowerCase() ||
+      /^user(name)?\d*/i.test(name)
+    ) {
+      return null;
+    }
+    return name.split(' ')[0];
+  };
+
+  const handleSaveName = async () => {
+    if (!user || !newName.trim()) return;
+    setSavingName(true);
+    const trimmed = newName.trim();
+    
+    const { error } = await supabase
+      .from('profiles')
+      .update({ full_name: trimmed })
+      .eq('user_id', user.id);
+    
+    if (!error) {
+      await supabase.auth.updateUser({ data: { full_name: trimmed } });
+      toast({ title: '✅ Name updated!', description: `Your name is now "${trimmed}"` });
+      setEditingName(false);
+      // Refresh the page to reflect changes
+      window.location.reload();
+    } else {
+      toast({ title: 'Error', description: 'Failed to update name', variant: 'destructive' });
+    }
+    setSavingName(false);
+  };
+
   const totalSize = files.reduce((sum, f) => sum + f.file_size, 0);
 
   const conversionTypes = ['all', ...new Set(files.map((f) => f.conversion_type))];
@@ -88,6 +150,8 @@ const Dashboard = () => {
 
   if (authLoading) return null;
 
+  const displayName = getDisplayName();
+
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
@@ -95,14 +159,18 @@ const Dashboard = () => {
         <div className="container max-w-6xl px-4">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
             <h1 className="font-display text-2xl md:text-3xl font-bold mb-1">
-              {(() => {
-                const name = profile?.full_name?.trim();
-                const isValid = name && name.toLowerCase() !== 'user' && !name.includes('@') && !/^user(name)?\d*/i.test(name);
-                return isValid
-                  ? <>Welcome back, <span className="gradient-text">{name.split(' ')[0]}</span> 👋</>
-                  : <>Welcome! 👋</>;
-              })()}
+              {displayName
+                ? <>Welcome back, <span className="gradient-text">{displayName}</span> 👋</>
+                : <>Welcome! 👋</>
+              }
             </h1>
+            {!displayName && (
+              <p className="text-xs text-muted-foreground/70 mb-1">
+                <button onClick={() => { setTab('settings'); setEditingName(true); setNewName(''); }} className="underline hover:text-foreground transition-colors">
+                  Add your name
+                </button> to personalize your greeting
+              </p>
+            )}
             <p className="text-muted-foreground text-sm md:text-base mb-6 md:mb-8">Manage your saved files and recent activity</p>
           </motion.div>
 
@@ -125,6 +193,7 @@ const Dashboard = () => {
           <div className="flex items-center gap-2 md:gap-4 mb-4 md:mb-6 border-b border-border pb-3 overflow-x-auto">
             {([
               { id: 'files' as DashTab, label: 'My Files', icon: FolderOpen },
+              { id: 'history' as DashTab, label: 'History', icon: History },
               { id: 'trash' as DashTab, label: 'Trash', icon: Trash2 },
               { id: 'settings' as DashTab, label: 'Settings', icon: Settings },
             ]).map((t) => (
@@ -259,6 +328,43 @@ const Dashboard = () => {
             </>
           )}
 
+          {tab === 'history' && (
+            <>
+              {history.length === 0 ? (
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-12 md:py-16 glass rounded-xl px-4">
+                  <History className="h-10 w-10 md:h-12 md:w-12 mx-auto text-muted-foreground/50 mb-3" />
+                  <h3 className="font-display text-base md:text-lg font-semibold mb-2">No activity yet</h3>
+                  <p className="text-muted-foreground text-xs md:text-sm mb-4">Your tool usage history will appear here</p>
+                  <Button onClick={() => navigate('/')} className="gradient-primary text-primary-foreground border-0">
+                    Explore Tools
+                  </Button>
+                </motion.div>
+              ) : (
+                <div className="space-y-2 md:space-y-3">
+                  {history.map((entry, i) => (
+                    <motion.div
+                      key={entry.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.02 }}
+                      className="glass rounded-xl p-3 md:p-4 flex items-center gap-3"
+                    >
+                      <div className="h-9 w-9 md:h-10 md:w-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                        <Clock className="h-4 w-4 md:h-5 md:w-5 text-primary" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-xs md:text-sm">{entry.tool_name}</p>
+                        <p className="text-[10px] md:text-xs text-muted-foreground">
+                          {format(new Date(entry.created_at), 'MMM d, yyyy · h:mm a')}
+                        </p>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              )}
+            </>
+          )}
+
           {tab === 'trash' && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-12 md:py-16 glass rounded-xl px-4">
               <RotateCcw className="h-10 w-10 md:h-12 md:w-12 mx-auto text-muted-foreground/50 mb-3" />
@@ -272,8 +378,31 @@ const Dashboard = () => {
               <h3 className="font-display text-base md:text-lg font-semibold mb-4">Account Settings</h3>
               <div className="space-y-4">
                 <div>
-                  <label className="text-xs md:text-sm font-medium text-muted-foreground">Username</label>
-                  <p className="text-foreground text-sm md:text-base">{profile?.full_name || profile?.username || 'N/A'}</p>
+                  <label className="text-xs md:text-sm font-medium text-muted-foreground">Full Name</label>
+                  {editingName ? (
+                    <div className="flex gap-2 mt-1">
+                      <Input
+                        value={newName}
+                        onChange={(e) => setNewName(e.target.value)}
+                        placeholder="Enter your full name"
+                        className="h-9 text-sm"
+                        autoFocus
+                      />
+                      <Button size="sm" className="h-9 gradient-primary text-primary-foreground border-0" onClick={handleSaveName} disabled={savingName || !newName.trim()}>
+                        <Save className="h-3.5 w-3.5 mr-1" /> Save
+                      </Button>
+                      <Button size="sm" variant="ghost" className="h-9" onClick={() => setEditingName(false)}>
+                        Cancel
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <p className="text-foreground text-sm md:text-base">{displayName || profile?.full_name || 'Not set'}</p>
+                      <button onClick={() => { setEditingName(true); setNewName(profile?.full_name || ''); }} className="text-muted-foreground hover:text-foreground transition-colors">
+                        <Pencil className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  )}
                 </div>
                 <div>
                   <label className="text-xs md:text-sm font-medium text-muted-foreground">Email</label>

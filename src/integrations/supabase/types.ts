@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      conversion_history: {
+        Row: {
+          created_at: string
+          file_name: string | null
+          id: string
+          tool_name: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          file_name?: string | null
+          id?: string
+          tool_name: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          file_name?: string | null
+          id?: string
+          tool_name?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string

@@ -91,7 +91,7 @@ const Header = () => {
                   <div className="h-6 w-6 rounded-full gradient-primary flex items-center justify-center">
                     <User className="h-3.5 w-3.5 text-primary-foreground" />
                   </div>
-                  <span className="hidden md:inline text-sm">{profile?.full_name?.split(' ')[0] || profile?.username || 'User'}</span>
+                  <span className="hidden md:inline text-sm">{getHeaderName()}</span>
                   <ChevronDown className="h-3 w-3" />
                 </Button>
                 {dropdownOpen && (

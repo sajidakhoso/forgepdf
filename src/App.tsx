@@ -14,6 +14,7 @@ import About from "./pages/About";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import AISummary from "./pages/AISummary";
+import PptToPdf from "./pages/PptToPdf";
 import {
   RotatePage, DeletePagesPage, ReorderPagesPage, ExtractPagesPage,
   OptimizeWebPage, ReduceSizePage, PdfToPdfAPage,
@@ -63,6 +64,7 @@ const App = () => (
               <Route path="/pdf-to-ppt" element={<PdfToPptPage />} />
               <Route path="/pdf-to-excel" element={<PdfToExcelPage />} />
               <Route path="/pdf-to-text" element={<PdfToTextPage />} />
+              <Route path="/ppt-to-pdf" element={<PptToPdf />} />
               <Route path="/html-to-pdf" element={<HtmlToPdfPage />} />
 
               {/* Edit */}

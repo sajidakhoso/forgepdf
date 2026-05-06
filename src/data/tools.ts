@@ -45,6 +45,7 @@ export const tools: Tool[] = [
   { title: 'PDF to PDF/A', description: 'Convert to archive format', icon: Archive, category: 'optimize', colorVar: 'compress', path: '/pdf-to-pdfa' },
 
   // Convert PDF (remaining)
+  { title: 'PPT to PDF', description: 'Convert PowerPoint to PDF', icon: Presentation, category: 'convert', colorVar: 'ppt', path: '/ppt-to-pdf' },
   { title: 'PDF to PowerPoint', description: 'Turn PDFs into presentations', icon: Presentation, category: 'convert', colorVar: 'ppt', path: '/pdf-to-ppt' },
   { title: 'PDF to Text', description: 'Extract plain text from PDF', icon: FileText, category: 'convert', colorVar: 'pdf-word', path: '/pdf-to-text' },
   { title: 'HTML to PDF', description: 'Convert web pages to PDF', icon: Code, category: 'convert', colorVar: 'rotate', path: '/html-to-pdf' },

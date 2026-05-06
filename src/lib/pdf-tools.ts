@@ -239,6 +239,72 @@ export async function wordToPdf(file: File): Promise<Blob> {
   return htmlToPdf(safe || `Converted from ${file.name}`);
 }
 
+// ---------- PPT/PPTX -> PDF ----------
+export async function pptxToPdf(file: File): Promise<Blob> {
+  const JSZip = (await import('jszip')).default;
+  const { default: jsPDF } = await import('jspdf');
+
+  const zip = await JSZip.loadAsync(file);
+
+  // Extract text from all slides
+  const slideEntries: { idx: number; text: string }[] = [];
+  const slideRegex = /^ppt\/slides\/slide(\d+)\.xml$/;
+
+  for (const [path, entry] of Object.entries(zip.files)) {
+    const match = path.match(slideRegex);
+    if (match && entry && !entry.dir) {
+      const xml = await entry.async('text');
+      // Extract text nodes from XML
+      const textParts: string[] = [];
+      const tagRegex = /<a:t[^>]*>([\s\S]*?)<\/a:t>/g;
+      let m;
+      while ((m = tagRegex.exec(xml)) !== null) {
+        textParts.push(m[1]);
+      }
+      slideEntries.push({ idx: parseInt(match[1], 10), text: textParts.join(' ').trim() });
+    }
+  }
+
+  // Sort by slide number
+  slideEntries.sort((a, b) => a.idx - b.idx);
+
+  if (slideEntries.length === 0) {
+    // Fallback: try reading as plain text
+    const text = await file.text().catch(() => '');
+    const safe = text.replace(/[^\x09\x0A\x0D\x20-\x7E]/g, ' ').slice(0, 50000);
+    return htmlToPdf(safe || `Converted from ${file.name}`);
+  }
+
+  // Create PDF with one page per slide
+  const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+  const pageW = doc.internal.pageSize.getWidth();
+  const pageH = doc.internal.pageSize.getHeight();
+  const margin = 50;
+  const usableW = pageW - margin * 2;
+
+  slideEntries.forEach((slide, i) => {
+    if (i > 0) doc.addPage();
+
+    // Slide title
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`Slide ${slide.idx}`, margin, margin + 20);
+
+    // Slide content
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'normal');
+    const lines = doc.splitTextToSize(slide.text || '(empty slide)', usableW);
+    let y = margin + 50;
+    for (const line of lines) {
+      if (y > pageH - margin) break;
+      doc.text(line, margin, y);
+      y += 16;
+    }
+  });
+
+  return doc.output('blob');
+}
+
 // ---------- Edit: text/image/shapes/highlight/redact/notes ----------
 export async function addTextToPdf(file: File, text: string, opts?: { page?: number; x?: number; y?: number; size?: number }): Promise<Blob> {
   const pdf = await PDFDocument.load(await file.arrayBuffer());

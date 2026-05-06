@@ -1,4 +1,4 @@
-import { corsHeaders } from "https://deno.land/x/edge_cors@0.0.6/src/cors.ts";
+
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
